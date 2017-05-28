@@ -56,13 +56,21 @@ def post_location():
     resp = jsonify(data)
     return resp
 
-
+# select name from test WHERE earth_box(ll_to_earth(40.478,73.987), 50000) @> ll_to_earth(test.lat, test.lng);
 @app.route('/get_using_postgres', methods=['GET'])
 def get_postgres():
     if request.args.get('lat') and request.args.get('lng'):
-        lat = request.args['lat']
-        lng = request.args['lng']
-        data = {'Response': 'request successful'}
+        lat = float(request.args['lat'])
+        lng = float(request.args['lng'])
+        if request.args.get('rad'):
+            rad = float(request.args.get('rad'))*1000
+            result = session.execute('select name from test WHERE earth_box(ll_to_earth(%s,%s), %s) @> ll_to_earth(test.lat, test.lng);' % (str(lat), str(lng), rad))
+        else:
+            result = session.execute('select name from test WHERE earth_box(ll_to_earth(%s,%s), 50000) @> ll_to_earth(test.lat, test.lng);' % (str(lat), str(lng)))
+        tmp = ''
+        for i in result:
+            tmp += i.name + ';'
+        data = {'Response': 'request successful', 'List': tmp}
     else:
         data = {'Respone': 'request unsuccessfull'}
     resp = jsonify(data)
@@ -80,7 +88,7 @@ def get_self():
             lst = computation(lat, lng)
         tmp = ''
         for i in lst:
-            tmp += ' '+i
+            tmp += i+';'
         data = {'Response': 'request successful', 'List': tmp}
     else:
         data = {'Respone': 'request unsuccessfull'}
