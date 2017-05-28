@@ -37,13 +37,14 @@ def post_location():
 
 @app.route('/get_using_postgres', methods=['GET'])
 def get_postgres():
-    print(request.args)
-    if request.args['lat'] and request.args['lng']:
+    if request.args.get('lat') and request.args.get('lng'):
         lat = request.args['lat']
         lng = request.args['lng']
-        return lat
+        data = {'Response': 'request successful'}
     else:
-        return 'helo'
+        data = {'Respone': 'request unsuccessfull'}
+    resp = jsonify(data)
+    return resp
 
 
 @app.route('/get_using_self', methods=['GET'])
