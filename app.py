@@ -21,7 +21,6 @@ def distance(lat1, lng1, lat2, lng2):
     return 12742 * asin(sqrt(a)) #2*R*asin...
 
 
-
 def computation(lat, lng, rad=5):
     query = session.query(Test).all()
     response = []
@@ -59,6 +58,7 @@ def post_location():
 # select name from test WHERE earth_box(ll_to_earth(40.478,73.987), 50000) @> ll_to_earth(test.lat, test.lng);
 @app.route('/get_using_postgres', methods=['GET'])
 def get_postgres():
+    print(request.args)
     if request.args.get('lat') and request.args.get('lng'):
         lat = float(request.args['lat'])
         lng = float(request.args['lng'])
